@@ -8,6 +8,12 @@
       <v-list-item-content>
         <v-list-item-title v-class:primary--text="selected !== null">
           {{ group.title }}
+          <span
+            class="text--secondary text-caption"
+            v-if="selected"
+          >
+            ({{ group.select == "state" ? $t(`category_state.${selected}`) : selected }})
+          </span>
         </v-list-item-title>
       </v-list-item-content>
     </template>
@@ -48,18 +54,18 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
-import Component from 'vue-class-component';
-import { Prop } from 'vue-property-decorator';
-import { Group } from '../types'
+import Vue from "vue";
+import Component from "vue-class-component";
+import { Prop } from "vue-property-decorator";
+import { Group } from "../types";
 
 @Component
 export default class FilterGroup extends Vue {
   @Prop()
-  readonly group!: Group
+  readonly group!: Group;
 
-  model = this.group.model
-  selected: string | null = null
+  model = this.group.model;
+  selected: string | null = null;
 
   created() {
     const s = this.$store.getters.config.filter[this.group.select];
@@ -75,8 +81,8 @@ export default class FilterGroup extends Vue {
 
   select(key: string | null) {
     this.selected = this.selected === key ? null : key;
-    this.$store.commit('updateConfig', {
-      key: 'filter',
+    this.$store.commit("updateConfig", {
+      key: "filter",
       value: {
         [this.group.select]: this.selected,
       },
@@ -84,7 +90,7 @@ export default class FilterGroup extends Vue {
   }
 
   isFontIcon(icon: string) {
-    return icon.startsWith('mdi-');
+    return icon.startsWith("mdi-");
   }
 }
 </script>

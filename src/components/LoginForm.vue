@@ -9,7 +9,7 @@
         dark
         color="primary"
       >
-        <v-toolbar-title>{{ $t('login') }}</v-toolbar-title>
+        <v-toolbar-title>{{ $t("login") }}</v-toolbar-title>
       </v-toolbar>
       <v-card-text>
         <v-form
@@ -53,6 +53,11 @@
         />
       </v-card-text>
       <v-card-actions>
+        <!-- remember -->
+        <v-switch
+          v-model="params.remember"
+          :label="$t('remember_me')"
+        />
         <v-spacer />
         <v-btn
           @click="submit"
@@ -60,7 +65,7 @@
           :disabled="!valid || submitting"
           :loading="submitting"
         >
-          {{ $t('submit') }}
+          {{ $t("submit") }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -68,10 +73,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs } from '@vue/composition-api';
+import { defineComponent, reactive, toRefs } from "@vue/composition-api";
 
-import api from '@/Api';
-import { useStore } from '@/store';
+import api from "@/Api";
+import { useStore } from "@/store";
 
 export default defineComponent({
   setup(_, { emit }) {
@@ -83,11 +88,28 @@ export default defineComponent({
       loginError: null,
       baseUrl: store.getters.config.baseUrl || location.href,
       params: {
-        username: '',
-        password: '',
+        username: "",
+        password: "",
       },
+      remember: false,
       form: null,
     });
+
+    // get login data from local storage
+    const loginData = localStorage.getItem("login");
+    if (loginData) {
+      const { username, password } = JSON.parse(loginData);
+      data.params.username = username;
+      data.params.password = password;
+    }
+
+    const storeLogin = (username: string, password: string) => {
+      const login = {
+        username,
+        password,
+      };
+      localStorage.setItem("login", JSON.stringify(login));
+    };
 
     const submit = async () => {
       if (data.submitting) {
@@ -102,31 +124,37 @@ export default defineComponent({
       try {
         const resp = await api.login(data.params, data.baseUrl);
 
-        if (resp === 'Ok.') {
+        if (resp === "Ok.") {
+          if (data.remember) {
+            storeLogin(data.params.username, data.params.password);
+          } else {
+            localStorage.removeItem("login");
+          }
+          
           api.changeBaseUrl(data.baseUrl);
 
-          store.commit('updateConfig', {
-            key: 'baseUrl',
+          store.commit("updateConfig", {
+            key: "baseUrl",
             value: data.baseUrl,
           });
-          store.commit('updateNeedAuth', false);
+          store.commit("updateNeedAuth", false);
 
-          emit('input', false);
+          emit("input", false);
           return;
         }
 
         data.loginError = resp;
       } catch (e) {
-        data.loginError = e.message;
+        data.loginError = e.message || "Unknown error";
       }
 
       data.submitting = false;
-    }
+    };
 
     return {
       ...toRefs(data),
       submit,
-    }
+    };
   },
 });
 </script>

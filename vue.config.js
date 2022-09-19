@@ -24,7 +24,7 @@ module.exports = {
     port: 8000,
     proxy: {
       '/api': {
-        target: 'http://qb.test:8080',
+        target: 'http://192.168.0.110:8080',
       },
     },
   },

@@ -1,5 +1,6 @@
 import Polyglot from 'node-polyglot';
 import langEn from './en';
+import langPtBr from './pt_br';
 import langRu from './ru';
 import langTr from './tr';
 import langZhCn from './zh-CN';
@@ -9,6 +10,7 @@ import { loadConfig } from '@/store/config';
 
 export const translations = {
   en: langEn,
+  'pt-br': langPtBr,
   'ru': langRu,
   'tr': langTr,
   'zh-CN': langZhCn,

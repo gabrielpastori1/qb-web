@@ -32,6 +32,7 @@ export default {
 
   username: 'Username',
   password: 'Password',
+  remember_me: 'Remember Me',
 
   name: 'Name',
   size: 'Size',
